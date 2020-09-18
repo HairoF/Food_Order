@@ -98,7 +98,8 @@ window.addEventListener('DOMContentLoaded', function() {
           modal = document.querySelector('.modal');
           
     function openModal() {
-        modal.classList.toggle('show');
+        modal.classList.add('show');
+        modal.classList.remove('hide');
         document.body.style.overflow = 'hidden';
         clearInterval(modalTimerId);
     }
@@ -108,14 +109,15 @@ window.addEventListener('DOMContentLoaded', function() {
     });
 
     function closeModal() {
-        modal.classList.toggle('show');
+        modal.classList.add('hide');
+        modal.classList.remove('show');
         document.body.style.overflow = '';
     }
 
     modal.addEventListener('click', (event) => { // close modal with event.target
         let target = event.target;
 
-        if (target.classList.contains('modal') || target.getAttribute('data-close')) {
+        if (target.classList.contains('modal') || target.getAttribute('data-close') == '') {
             closeModal();
         }
     });
@@ -186,7 +188,7 @@ window.addEventListener('DOMContentLoaded', function() {
     const forms = document.querySelectorAll('form');
 
     const message = {
-        loading: 'Загрузка',
+        loading: './img/form/spinner.svg',
         success: 'Скоро свяжемся',
         failure: 'Что-то не так...'
     };
@@ -199,10 +201,14 @@ window.addEventListener('DOMContentLoaded', function() {
         form.addEventListener('submit', (event) => {
             event.preventDefault();
 
-            let statusMessage = document.createElement('div');
-            statusMessage.classList.add('status');
-            statusMessage.textContent = message.loading;
-            form.append(statusMessage);
+            let statusMessage = document.createElement('img');
+            statusMessage.src = message.loading;
+            statusMessage.style.cssText = `
+                display: block;
+                margin: 0 auto;
+            `;
+            
+            form.insertAdjacentElement('afterend', statusMessage);
 
 
             const request = new XMLHttpRequest();
@@ -245,7 +251,8 @@ window.addEventListener('DOMContentLoaded', function() {
         thanksModal.innerHTML = `
             <div class="modal__content">
                 <div class="modal__close" data-close>×</div>
-                <div class="modal__title"</div>
+                <div class="modal__title">${message}</div>
+            </div>
         `;
 
         document.querySelector('.modal').append(thanksModal);
