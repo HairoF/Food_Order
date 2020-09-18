@@ -95,8 +95,7 @@ window.addEventListener('DOMContentLoaded', function() {
     // Modal window
 
     const modalWindow = document.querySelectorAll('[data-modal]'),
-          modal = document.querySelector('.modal'),
-          closeModalBtn = document.querySelector('[data-close]');
+          modal = document.querySelector('.modal');
           
     function openModal() {
         modal.classList.toggle('show');
@@ -113,12 +112,10 @@ window.addEventListener('DOMContentLoaded', function() {
         document.body.style.overflow = '';
     }
 
-    closeModalBtn.addEventListener('click', closeModal);
-
     modal.addEventListener('click', (event) => { // close modal with event.target
         let target = event.target;
 
-        if (target.classList.contains('modal')) {
+        if (target.classList.contains('modal') || target.getAttribute('data-close')) {
             closeModal();
         }
     });
@@ -226,15 +223,38 @@ window.addEventListener('DOMContentLoaded', function() {
             request.addEventListener('load', () => {
                 if (request.status == 200) {
                     console.log(request.response);
-                    statusMessage.textContent = message.success;
+                    showThanksModal(message.success);
                     form.reset();
-                    setTimeout(() => {
-                        statusMessage.remove();
-                    }, 2000);
+                    statusMessage.remove();
+
                 } else {
-                    statusMessage.textContent = message.failure;
+                    showThanksModal(message.failure);
                 }
             });
         });
+    }
+    // Update modal
+    function showThanksModal(message) {
+        const previousModalDialog = document.querySelector('.modal__dialog');
+
+        previousModalDialog.classList.add('hide');
+        openModal();
+
+        const thanksModal = document.createElement('div');
+        thanksModal.classList.add('modal__dialog');
+        thanksModal.innerHTML = `
+            <div class="modal__content">
+                <div class="modal__close" data-close>×</div>
+                <div class="modal__title"</div>
+        `;
+
+        document.querySelector('.modal').append(thanksModal);
+
+        setTimeout(() => {
+            thanksModal.remove();
+            previousModalDialog.classList.add('show');
+            previousModalDialog.classList.remove('hide');
+            closeModal();
+        }, 5000);
     }
 });
