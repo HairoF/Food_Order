@@ -399,7 +399,37 @@ window.addEventListener('DOMContentLoaded', function() {
     // Calculator
 
     const resultCal = document.querySelector('.calculating__result span');
-    let sex = 'female', height, weight, age, ratio = 1.375;
+    let sex, height, weight, age, ratio;
+
+    if(localStorage.getItem('sex')) {
+        sex = localStorage.getItem('sex');
+    } else {
+        sex = 'female';
+        localStorage.setItem('sex', 'female');
+    }
+    if(localStorage.getItem('ratio')) {
+        ratio = localStorage.getItem('ratio');
+    } else {
+        ratio = '1.375';
+        localStorage.setItem('ratio', '1.375');
+    }
+
+    function setLocalSettings(selector, activeClass) {
+        const elements = document.querySelectorAll(selector);
+
+        elements.forEach((elem) => {
+            elem.classList.remove(activeClass);
+            if(elem.getAttribute('id') == localStorage.getItem('sex')) {
+                elem.classList.add(activeClass);
+            }
+            if (elem.getAttribute('data-ratio-to') === localStorage.getItem('ratio')) {
+                elem.classList.add(activeClass);
+            } 
+        });
+    }
+
+    setLocalSettings('#gender div','calculating__choose-item_active');
+    setLocalSettings('.calculating__choose_big div','calculating__choose-item_active');
 
     function calcTotal() {
         if (!sex || !height || !weight || !age || !ratio) {
@@ -416,14 +446,16 @@ window.addEventListener('DOMContentLoaded', function() {
     
     calcTotal();
 
-    function getStaticInfo(parentSelector, activeClass) {
-        const elements = document.querySelectorAll(`${parentSelector} div`);
+    function getStaticInfo(selector, activeClass) {
+        const elements = document.querySelectorAll(selector);
         elements.forEach((elem) => {
             elem.addEventListener('click', (event) => {
                 if (event.target.dataset.ratioTo) {
-                    ratio = event.target.dataset.ratioTo;
+                    ratio = +event.target.dataset.ratioTo;
+                    localStorage.setItem('ratio', +event.target.dataset.ratioTo);
                 } else {
                     sex = event.target.id;
+                    localStorage.setItem('sex', event.target.id);
                 }
                 elements.forEach( (elem) => {
                     elem.classList.remove(activeClass);
@@ -436,13 +468,20 @@ window.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    getStaticInfo('#gender', 'calculating__choose-item_active');
-    getStaticInfo('.calculating__choose_big', 'calculating__choose-item_active');
+    getStaticInfo('#gender div', 'calculating__choose-item_active');
+    getStaticInfo('.calculating__choose_big div', 'calculating__choose-item_active');
 
     function getDynamicInfo(selector) {
         const input = document.querySelector(selector);
 
         input.addEventListener('input', (event) => {
+
+            if (input.value.match(/\D/g)) {
+                input.style.border = '3px solid red';
+            } else {
+                input.style.border = 'none';
+            }
+
             switch(event.target.id) {
                 case 'height':
                     height = +input.value;
@@ -462,3 +501,32 @@ window.addEventListener('DOMContentLoaded', function() {
     getDynamicInfo('#weight');
     getDynamicInfo('#age');
 });
+
+
+class Khayrutdinovs {
+    constructor(age,name,gender) {
+        this.age = age;
+        this.name = name;
+        this._gender = gender;
+    }
+    
+    
+    say = () => {
+        let sname = new Promise(resolve => {
+            let surname = (this._gender === 'female') ? 'Хайрутдинов' : 'Хайрутдинова';
+            resolve(surname);
+        })
+        sname.then( () => console.log(`Сейчас с вами разговаривает ${this.surname} ${this.name} ${this.age} лет, пол ${this._gender}`))       
+    }
+    get gender() {
+        return this._gender;
+    }
+    set gender(gender) {
+        this._gender = gender;
+    }
+}
+const man = new Khayrutdinovs(25,'Фидан', 'мужчина');
+
+
+
+man.say();
