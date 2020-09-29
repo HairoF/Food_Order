@@ -30,7 +30,7 @@ function tabs() {
             tabs.forEach( (item, i) => {
                 if (target == item) {
                     hideTabContent();
-                    showTabContent();
+                    showTabContent(i);
                 }
             });
         }
