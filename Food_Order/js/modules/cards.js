@@ -1,3 +1,5 @@
+import {getResours} from '../services/services';
+
 function cards() {
     class MenuCard {
         constructor(src, alt, title, descr, price, parentSelector) {
@@ -33,16 +35,6 @@ function cards() {
         }
     }
 
-    const getResours = async (url) => {
-        const result = await fetch(url);
-
-        if (!result.ok) {
-            throw new Error(`Couldn't fetch ${url}, with status: ${result.status}`);
-        }
-        
-        return await result.json();
-    };
-
     getResours('http://localhost:3000/menu')
         .then((data => {
             data.forEach(({img, altimg, title, descr, price}) => {
@@ -53,4 +45,4 @@ function cards() {
 
 }
 
-module.exports = cards;
+export default cards;
